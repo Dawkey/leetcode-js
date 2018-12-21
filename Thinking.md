@@ -405,3 +405,106 @@ function remove_val(nums,val){
     return k+1;
 }
 ```
+
+---
+
+### 28.实现strStr()（Implement strStr()）
+
+**思路：**
+
+使用的最直接的暴力查找，KMP查找之后有时间再补上。
+
+**代码：**
+
+```js
+function str_str(str1, str2){
+    if(str2 === ""){
+        return 0;
+    }
+    if(str1 === ""){
+        return -1;
+    }
+
+    let arr1 = str1.split("");
+    let arr2 = str2.split("");
+    for(let i = 0; i<=arr1.length; i++){
+        if(arr1.length - i < arr2.length){
+            return -1;
+        }
+
+        let k = i;
+        for(let j=0; j<arr2.length; j++){
+            if(arr1[k] === arr2[j]){
+                if(j === arr2.length - 1){
+                    return i;
+                }
+                k++;
+            }else{
+                break;
+            }
+        }
+    }
+}
+
+console.log(str_str("dawkey","key"));
+```
+
+---
+
+### 29.两数相除（Divide Two Integers）
+
+**思路：**
+
+题目要求不能使用乘法，最简单的就是，对除数不停的相加，直到其大于被除数为止，加的次数减一就得到了结果，不过在被除数很大时，除数很小时，需要加的次数会很多；
+
+我们可以采用更好的一种方法，对**除数**两两相加，对其结果再两两相加，其实就相当于是乘法上不停的**乘以二**，直到这个值**大于被**除数，这时，我们取这个值的**前**一个值，用被除数减去这个值，对于得到的**差值**，重复以上的操作，直到我们最终得到的差值**小于**除数，把这个过程中每次的**商**相加就得到了最终的结果。
+
+> 上面提到的**商**，其实是我们在开始对**除数**相加时，设置了一个与之对应的变量，初始值为`1`，在**除数**两两相加的同时，对`1`也两两相加得到`2`,之后对对**除数结果**两两相加时，对`2`也两两相加得到`4`，这个结果就相当于我们每次相加后的**商**，也就是**除数**的倍数。
+
+以上说了这么多，其实就是一个简单的递归，我在写代码，想着能不能通过循环达到类似于递归函数的效果，于是就有以下通过两个`while`循环的写法。
+
+**代码：**
+
+```js
+function divide(dived_num, div_num){
+    let flag = 1;
+    if(dived_num < 0){
+        dived_num = -dived_num;
+        flag = -flag;
+    }
+    if(div_num < 0){
+        div_num = -div_num;
+        flag = -flag;
+    }
+    
+    let remain_num = dived_num;
+    let quo_num = 0;
+    while(remain_num >= div_num + div_num){
+        let quo = 1;
+        let add = div_num;
+        while(add + add <= remain_num){
+            add = add + add;
+            quo = quo + quo;
+        }
+        remain_num = remain_num - add;
+        quo_num = quo_num + quo;
+    }
+
+    
+    if(remain_num >= div_num){
+        quo_num = quo_num + 1;
+    }
+    if(flag === -1){
+        quo_num = -quo_num;
+    }
+
+    if(quo_num >= 2147483647 || quo_num <= -2147483648){
+        return 2147483647;
+    }
+
+    return quo_num;
+}
+
+
+console.log(divide(100,13));
+```
